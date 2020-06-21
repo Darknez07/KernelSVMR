@@ -1,20 +1,20 @@
 #Importing  the dataset
 dataset = read.csv('Social_Network_Ads.csv')
 dataset = dataset[3:5]
-
+# Converting into factor for target values 
 dataset$Purchased = factor(dataset$Purchased, levels = c(0, 1))
-
+#For splitting
 library(caTools)
 set.seed(123)
 split = sample.split(dataset$Purchased, SplitRatio = 0.75)
 training_set = subset(dataset, split == TRUE)
 test_set = subset(dataset, split == FALSE)
-
+# Feature Scaling
 test_set[-3] = scale(test_set[-3])
 training_set[-3] = scale(training_set[-3])
 
 head(training_set)
-
+# Library fot SVM
 library(e1071)
 
 clf = svm(formula = Purchased~.,
@@ -25,7 +25,7 @@ y_pred = predict(clf, newdata = test_set)
 
 head(data.frame(y_pred))
 head(data.frame(test_set[,3]))
-
+# Confusion Matrix
 cm = table(test_set[,3],y_pred)
 
 library('ggplot2')
@@ -35,7 +35,7 @@ ggplot(data =  data.frame(cm), mapping = aes(x = y_pred, y = Var1)) +
   geom_text(aes(label = sprintf("%1.0f", Freq)), vjust = 1) +
   scale_fill_gradient(low = "lightblue", high = "blue") 
 theme_bw() + theme(legend.position = "none")
-
+# Plotting Training Set
 set = training_set
 X1 = seq(min(set[, 1]) - 1, max(set[, 1]) + 1, by = 0.01)
 X2 = seq(min(set[, 2]) - 1, max(set[, 2]) + 1, by = 0.01)
@@ -56,7 +56,7 @@ points(grid_set, pch = '.',
 points(set, pch = 21, 
        bg = ifelse(set[, 3] == 1, 
                    'green4', 'red3'))
-
+#Plotting Test Set
 set = test_set
 X1 = seq(min(set[, 1]) - 1, max(set[, 1]) + 1, by = 0.01)
 X2 = seq(min(set[, 2]) - 1, max(set[, 2]) + 1, by = 0.01)
